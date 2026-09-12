@@ -123,11 +123,12 @@ body.motion-paused .intro-card,body.motion-paused .hero-content>*{animation:none
 .compliments{font:italic 17px "Cormorant Garamond",serif;margin:22px 0 28px}
 footer{text-align:center;background:var(--deep-maroon);color:#e0cda8;padding:35px 22px 125px;font-size:9px;letter-spacing:.12em;text-transform:uppercase}
 footer strong{display:block;font:400 33px "Great Vibes",cursive;margin-bottom:10px;text-transform:none;letter-spacing:.01em}
-.guest-dock{position:fixed;bottom:max(14px,env(safe-area-inset-bottom));left:50%;transform:translate(-50%,120px);width:min(440px,calc(100% - 28px));display:grid;grid-template-columns:1fr 1.15fr auto;align-items:center;gap:4px;padding:7px;border-radius:99px;background:#fffaf2ee;border:1px solid #d8c7a6;box-shadow:0 8px 35px #332c252b;backdrop-filter:blur(16px);z-index:95;transition:transform .7s}
+.guest-dock{position:fixed;bottom:max(14px,env(safe-area-inset-bottom));left:50%;transform:translate(-50%,120px);width:min(490px,calc(100% - 28px));display:grid;grid-template-columns:1fr 1.15fr auto auto;align-items:center;gap:4px;padding:7px;border-radius:99px;background:#fffaf2ee;border:1px solid #d8c7a6;box-shadow:0 8px 35px #332c252b;backdrop-filter:blur(16px);z-index:95;transition:transform .7s}
 .opened .guest-dock{transform:translate(-50%,0)}
 .guest-dock a,.guest-dock button{min-height:46px;display:flex;align-items:center;justify-content:center;text-decoration:none;border:0;border-radius:99px;font-size:10px;letter-spacing:.04em;background:transparent;color:var(--maroon)}
 .guest-dock .dock-calendar{background:var(--maroon);color:white;padding:0 12px}
-.guest-dock .motion-button{font-size:17px;min-width:44px}
+.guest-dock .music-button,.guest-dock .motion-button{font-size:17px;min-width:42px;transition:color .25s,background .25s,transform .25s}
+.guest-dock .music-button.is-playing{color:var(--gold);background:#9d773e18;animation:musicPulse 2.4s ease-in-out infinite}
 .toast{position:fixed;z-index:1000;bottom:100px;left:50%;transform:translate(-50%,30px);opacity:0;pointer-events:none;background:var(--deep-maroon);color:white;border-radius:16px;padding:15px 20px;width:max-content;max-width:90%;font-size:12px;text-align:center;transition:opacity .3s,transform .3s}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 .reveal{opacity:1}
@@ -140,6 +141,7 @@ footer strong{display:block;font:400 33px "Great Vibes",cursive;margin-bottom:10
 @keyframes leafDrift{0%{opacity:0;transform:translate3d(0,-25px,0) rotate(0)}15%,75%{opacity:.55}50%{transform:translate3d(var(--drift),55vh,0) rotate(155deg)}100%{opacity:0;transform:translate3d(calc(var(--drift) * -.5),110vh,0) rotate(330deg)}}
 @keyframes scrollNudge{50%{transform:translateY(4px)}}
 @keyframes buttonGleam{30%,100%{left:180%}}
+@keyframes musicPulse{50%{transform:scale(1.08)}}
 @media(min-width:700px){
 .intro-temple{background-size:auto 100%}
 .hero{min-height:900px;padding-top:150px;padding-bottom:280px}
@@ -161,14 +163,14 @@ footer strong{display:block;font:400 33px "Great Vibes",cursive;margin-bottom:10
 .venue{grid-template-columns:1fr 1fr}
 .venue-image{min-height:650px}
 .venue-copy{align-self:center;padding:65px 40px}
-.guest-dock{width:400px}
+.guest-dock{width:450px}
 }
 @media(max-width:420px){
 .section{padding-inline:20px}
 .calendar-date{gap:8px}
 .calendar-date strong{font-size:68px;padding-inline:12px}
 .calendar-date span{font-size:18px}
-.guest-dock{width:calc(100% - 18px);grid-template-columns:minmax(0,1fr) minmax(0,1.15fr) 44px}
+.guest-dock{width:calc(100% - 18px);grid-template-columns:minmax(0,1fr) minmax(0,1.15fr) 40px 40px}
 .guest-dock a,.guest-dock button{font-size:9px;white-space:nowrap}
 }
 @media(max-width:360px){
