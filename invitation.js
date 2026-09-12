@@ -6,6 +6,7 @@ const dock = document.querySelector('.guest-dock');
 const toast = document.getElementById('toast');
 const motionButton = document.getElementById('motionButton');
 const musicButton = document.getElementById('musicButton');
+const backgroundMusic = document.getElementById('backgroundMusic');
 const motionQuery = matchMedia('(prefers-reduced-motion: reduce)');
 const weddingDate = new Date('2026-11-26T20:32:00+05:30');
 let opened = false;
@@ -41,14 +42,10 @@ else motionQuery.addListener(syncMotionPreference);
 document.addEventListener('visibilitychange', updateMotion);
 updateMotion();
 
-// A quiet original melody avoids external audio files and starts inside the opening tap.
-const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-const melody = [293.66, 369.99, 440, 493.88, 440, 369.99, 329.63, 293.66, 369.99, 440, 587.33, 493.88, 440, 329.63, 369.99, 293.66];
-let musicContext = null;
-let musicMaster = null;
-let musicTimer = null;
+// The supplied song starts inside the opening tap to satisfy mobile autoplay rules.
 let musicPlaying = false;
-let musicStep = 0;
+let resumeMusicWhenVisible = false;
+backgroundMusic.volume = .28;
 
 function updateMusicButton() {
   musicButton.textContent = musicPlaying ? '♫' : '♩';
@@ -57,92 +54,49 @@ function updateMusicButton() {
   musicButton.setAttribute('aria-pressed', String(musicPlaying));
 }
 
-function playTone(context, output, frequency, start, duration, volume, type = 'sine') {
-  const oscillator = context.createOscillator();
-  const filter = context.createBiquadFilter();
-  const gain = context.createGain();
-  oscillator.type = type;
-  oscillator.frequency.setValueAtTime(frequency, start);
-  filter.type = 'lowpass';
-  filter.frequency.setValueAtTime(1500, start);
-  filter.Q.value = .7;
-  gain.gain.setValueAtTime(.0001, start);
-  gain.gain.exponentialRampToValueAtTime(volume, start + .18);
-  gain.gain.exponentialRampToValueAtTime(.0001, start + duration);
-  oscillator.connect(filter);
-  filter.connect(gain);
-  gain.connect(output);
-  oscillator.start(start);
-  oscillator.stop(start + duration + .05);
-}
-
 async function startMusic(showNotice = false) {
-  if (!AudioContextClass || musicPlaying) {
-    if (!AudioContextClass) musicButton.hidden = true;
-    return;
-  }
+  if (musicPlaying) return;
   try {
-    const context = new AudioContextClass();
-    const master = context.createGain();
-    const delay = context.createDelay(1);
-    const echo = context.createGain();
-    master.gain.setValueAtTime(.0001, context.currentTime);
-    master.gain.exponentialRampToValueAtTime(.42, context.currentTime + 2.2);
-    delay.delayTime.value = .32;
-    echo.gain.value = .16;
-    master.connect(context.destination);
-    master.connect(delay);
-    delay.connect(context.destination);
-    delay.connect(echo);
-    echo.connect(delay);
-    musicContext = context;
-    musicMaster = master;
+    await backgroundMusic.play();
     musicPlaying = true;
-    musicStep = 0;
-    let nextNote = context.currentTime + .08;
-    const schedule = () => {
-      if (!musicPlaying || musicContext !== context) return;
-      while (nextNote < context.currentTime + 1.4) {
-        const frequency = melody[musicStep % melody.length];
-        playTone(context, master, frequency, nextNote, 2.25, .043);
-        playTone(context, master, frequency * 2, nextNote + .04, 1.4, .009, 'triangle');
-        if (musicStep % 8 === 0) {
-          playTone(context, master, 146.83, nextNote, 8.2, .016, 'sine');
-          playTone(context, master, 220, nextNote, 8.2, .009, 'sine');
-        }
-        musicStep += 1;
-        nextNote += 1.05;
-      }
-    };
-    await context.resume();
-    schedule();
-    musicTimer = setInterval(schedule, 700);
+    resumeMusicWhenVisible = false;
     updateMusicButton();
-    if (showNotice) notifyGuest('Soft wedding music is playing');
+    if (showNotice) notifyGuest('Wedding song is playing');
   } catch (error) {
     musicPlaying = false;
-    musicButton.hidden = true;
+    updateMusicButton();
+    if (showNotice) notifyGuest('Tap the music note to play the song');
   }
 }
 
 function stopMusic(showNotice = false) {
   if (!musicPlaying) return;
+  backgroundMusic.pause();
   musicPlaying = false;
-  clearInterval(musicTimer);
-  const context = musicContext;
-  const master = musicMaster;
-  musicContext = null;
-  musicMaster = null;
-  if (context && master && context.state !== 'closed') {
-    master.gain.cancelScheduledValues(context.currentTime);
-    master.gain.setTargetAtTime(.0001, context.currentTime, .08);
-    setTimeout(() => context.close().catch(() => {}), 350);
-  }
+  resumeMusicWhenVisible = false;
   updateMusicButton();
   if (showNotice) notifyGuest('Music paused');
 }
 
 musicButton.addEventListener('click', () => musicPlaying ? stopMusic(true) : startMusic(true));
+backgroundMusic.addEventListener('play', () => { musicPlaying = true; updateMusicButton(); });
+backgroundMusic.addEventListener('pause', () => {
+  if (!resumeMusicWhenVisible) musicPlaying = false;
+  updateMusicButton();
+});
+backgroundMusic.addEventListener('error', () => {
+  musicPlaying = false;
+  musicButton.hidden = true;
+});
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && musicPlaying) {
+    resumeMusicWhenVisible = true;
+    backgroundMusic.pause();
+  } else if (!document.hidden && resumeMusicWhenVisible) {
+    resumeMusicWhenVisible = false;
+    backgroundMusic.play().catch(() => { musicPlaying = false; updateMusicButton(); });
+  }
+});
 updateMusicButton();
 
 // Keep keyboard and screen-reader navigation inside the cover until it opens.
