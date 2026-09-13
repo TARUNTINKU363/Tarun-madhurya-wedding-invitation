@@ -76,7 +76,7 @@ body.motion-paused .intro-card,body.motion-paused .hero-content>*{animation:none
 .lead{font:400 20px/1.7 "Cormorant Garamond",serif;color:#6c5c4d}
 .welcome{display:grid;gap:60px;max-width:1200px;margin:auto}
 .portrait-wrap{position:relative;max-width:560px;width:100%;margin:0 auto;padding:8px;border:1px solid #b6986860;border-radius:24px;transform:rotate(-2deg)}
-.portrait-wrap img{border-radius:16px;width:100%;height:auto;aspect-ratio:3/4;object-fit:contain}
+.portrait-wrap img{border-radius:16px;width:100%;height:auto;aspect-ratio:2/3;object-fit:contain}
 .portrait-caption{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%) rotate(2deg);white-space:nowrap;background:var(--green);color:#fff9ed;padding:14px 24px;border-radius:99px;font:italic 19px "Cormorant Garamond",serif;box-shadow:var(--shadow)}
 .welcome-copy{text-align:center}
 .family-note{margin-top:26px;padding:20px 0 0;border-top:1px solid #c9b38b65}
