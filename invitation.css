@@ -169,6 +169,9 @@ footer strong{display:block;font:400 33px "Great Vibes",cursive;margin-bottom:10
 .venue-copy{align-self:center;padding:65px 40px}
 .guest-dock{width:450px}
 }
+@media(max-width:699px) and (min-height:601px){
+.intro-label{margin-bottom:32px}
+}
 @media(max-width:420px){
 .section{padding-inline:20px}
 .calendar-date{gap:8px}
