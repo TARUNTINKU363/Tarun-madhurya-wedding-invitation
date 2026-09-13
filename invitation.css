@@ -1,8 +1,9 @@
 :root{--ivory:#fff9ed;--cream:#f4ead8;--ink:#3e352d;--maroon:#6e2635;--deep-maroon:#49202a;--gold:#9d773e;--light-gold:#e9d4a5;--green:#374d3a;--shadow:0 24px 65px #513d2018}
 *{box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:84px}
-body{margin:0;background:var(--ivory);color:var(--ink);font-family:Manrope,sans-serif;overflow-x:clip}
+html{scroll-behavior:smooth;scroll-padding-top:84px;background:var(--deep-maroon);overscroll-behavior-y:none}
+body{margin:0;min-height:100%;background:var(--ivory);color:var(--ink);font-family:Manrope,sans-serif;overflow-x:clip;overscroll-behavior-y:none}
 body.no-scroll{overflow:hidden}
+main{position:relative;background:var(--ivory)}
 img{display:block;max-width:100%}
 button,a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 a{color:inherit}
@@ -11,9 +12,9 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offse
 button{cursor:pointer}
 .skip-link{position:fixed;top:12px;left:12px;z-index:1001;padding:12px;background:white;transform:translateY(-160%)}
 .skip-link:focus{transform:none}
-.intro{position:fixed;inset:0;z-index:999;overflow:auto;background:#fcf4e5;isolation:isolate;transition:opacity 1s,visibility 1s;display:grid;align-content:center;align-content:safe center;padding:24px}
-.intro-temple{position:absolute;inset:0;z-index:-2;background:url("./materials/wedding-temple.jpeg") center bottom/100% auto no-repeat}
-.intro-card{position:relative;text-align:center;max-width:390px;margin:auto;width:100%;animation:invitationRise 1.2s both}
+.intro{position:fixed;inset:0;z-index:999;overflow:auto;background:#fcf4e5;isolation:isolate;transition:opacity 1s,visibility 1s;display:grid;align-content:start;padding:clamp(28px,5svh,48px) 24px 24px}
+.intro-temple{position:absolute;inset:0;z-index:-2;background:url("./materials/wedding-temple.jpeg") center bottom/cover no-repeat}
+.intro-card{position:relative;text-align:center;max-width:390px;margin:0 auto;width:100%;animation:invitationRise 1.2s both}
 .intro-blessing{font:italic 500 13px/1.6 "Cormorant Garamond",serif;color:#7c623b;letter-spacing:.06em;margin:0 0 24px}
 .intro-label,.section-label,.eyebrow{font-size:10px;font-weight:600;line-height:1.7;text-transform:uppercase;letter-spacing:.25em}
 .intro-label{color:var(--green);margin:0 0 22px}
@@ -143,6 +144,7 @@ footer strong{display:block;font:400 33px "Great Vibes",cursive;margin-bottom:10
 @keyframes buttonGleam{30%,100%{left:180%}}
 @keyframes musicPulse{50%{transform:scale(1.08)}}
 @media(min-width:700px){
+.intro{align-content:center;padding:24px}
 .intro-temple{background-size:auto 100%}
 .hero{min-height:900px;padding-top:150px;padding-bottom:280px}
 .hero-art{width:auto;height:100%;left:50%;transform:translateX(-50%);animation:none!important}
