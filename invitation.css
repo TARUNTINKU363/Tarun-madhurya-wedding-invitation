@@ -170,7 +170,7 @@ footer strong{display:block;font:400 33px "Great Vibes",cursive;margin-bottom:10
 .guest-dock{width:450px}
 }
 @media(max-width:699px) and (min-height:601px){
-.intro-label{margin-bottom:52px}
+.intro-label{margin-bottom:68px}
 }
 @media(max-width:420px){
 .section{padding-inline:20px}
