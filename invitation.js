@@ -43,9 +43,20 @@ document.addEventListener('visibilitychange', updateMotion);
 updateMotion();
 
 // The supplied song starts inside the opening tap to satisfy mobile autoplay rules.
+const musicStartAt = 6;
 let musicPlaying = false;
 let resumeMusicWhenVisible = false;
+let musicHasStarted = false;
 backgroundMusic.volume = .28;
+
+function moveMusicToStart() {
+  if (backgroundMusic.readyState >= 1 && Number.isFinite(backgroundMusic.duration) && backgroundMusic.duration > musicStartAt) {
+    backgroundMusic.currentTime = musicStartAt;
+  }
+}
+backgroundMusic.addEventListener('loadedmetadata', () => {
+  if (!musicHasStarted) moveMusicToStart();
+});
 
 function updateMusicButton() {
   musicButton.textContent = musicPlaying ? '♫' : '♩';
@@ -57,7 +68,9 @@ function updateMusicButton() {
 async function startMusic(showNotice = false) {
   if (musicPlaying) return;
   try {
+    if (!musicHasStarted) moveMusicToStart();
     await backgroundMusic.play();
+    musicHasStarted = true;
     musicPlaying = true;
     resumeMusicWhenVisible = false;
     updateMusicButton();
@@ -83,6 +96,18 @@ backgroundMusic.addEventListener('play', () => { musicPlaying = true; updateMusi
 backgroundMusic.addEventListener('pause', () => {
   if (!resumeMusicWhenVisible) musicPlaying = false;
   updateMusicButton();
+});
+backgroundMusic.addEventListener('ended', async () => {
+  if (!musicPlaying) return;
+  musicHasStarted = false;
+  moveMusicToStart();
+  try {
+    await backgroundMusic.play();
+    musicHasStarted = true;
+  } catch (error) {
+    musicPlaying = false;
+    updateMusicButton();
+  }
 });
 backgroundMusic.addEventListener('error', () => {
   musicPlaying = false;
