@@ -100,7 +100,7 @@ function startMusicOnFirstInteraction(event) {
   if (!musicPlaying) startMusic();
 }
 
-['pointerdown', 'touchstart', 'keydown'].forEach(eventName => {
+['pointerdown', 'pointerup', 'touchstart', 'touchend', 'click', 'keydown', 'wheel'].forEach(eventName => {
   document.addEventListener(eventName, startMusicOnFirstInteraction, { once: true, passive: true });
 });
 
