@@ -1,15 +1,10 @@
-const intro = document.getElementById('intro');
-const enterButton = document.getElementById('enterInvitation');
-const main = document.getElementById('main');
 const header = document.getElementById('siteHeader');
-const dock = document.querySelector('.guest-dock');
 const toast = document.getElementById('toast');
 const motionButton = document.getElementById('motionButton');
 const musicButton = document.getElementById('musicButton');
 const backgroundMusic = document.getElementById('backgroundMusic');
 const motionQuery = matchMedia('(prefers-reduced-motion: reduce)');
 const weddingDate = new Date('2026-11-26T20:32:00+05:30');
-let opened = false;
 let paused = motionQuery.matches;
 let toastTimer;
 
@@ -42,7 +37,7 @@ else motionQuery.addListener(syncMotionPreference);
 document.addEventListener('visibilitychange', updateMotion);
 updateMotion();
 
-// The supplied song starts inside the opening tap to satisfy mobile autoplay rules.
+// Try immediately, then use the guest's first interaction when audible autoplay is blocked.
 const musicStartAt = 6;
 let musicPlaying = false;
 let resumeMusicWhenVisible = false;
@@ -81,6 +76,14 @@ async function startMusic(showNotice = false) {
     if (showNotice) notifyGuest('Tap the music note to play the song');
   }
 }
+
+function startMusicOnFirstInteraction() {
+  if (!musicPlaying) startMusic();
+}
+
+['pointerdown', 'touchstart', 'keydown'].forEach(eventName => {
+  document.addEventListener(eventName, startMusicOnFirstInteraction, { once: true, passive: true });
+});
 
 function stopMusic(showNotice = false) {
   if (!musicPlaying) return;
@@ -124,28 +127,7 @@ document.addEventListener('visibilitychange', () => {
 });
 updateMusicButton();
 
-// Keep keyboard and screen-reader navigation inside the cover until it opens.
-[main, header, dock, document.querySelector('footer')].forEach(element => element.inert = true);
-enterButton.focus({ preventScroll: true });
-intro.addEventListener('keydown', event => {
-  if (event.key === 'Tab') { event.preventDefault(); enterButton.focus(); }
-  if (event.key === 'Escape') openInvitation();
-});
-function openInvitation() {
-  if (opened) return;
-  opened = true;
-  window.scrollTo({ top: 0, behavior: 'auto' });
-  [main, header, dock, document.querySelector('footer')].forEach(element => element.inert = false);
-  document.body.classList.add('opened');
-  document.body.classList.remove('no-scroll');
-  startMusic();
-  intro.classList.add('hidden');
-  intro.inert = true;
-  document.getElementById('heroTitle').focus({ preventScroll: true });
-  setTimeout(() => intro.remove(), motionQuery.matches ? 0 : 1050);
-}
-enterButton.addEventListener('click', openInvitation);
-document.querySelector('.skip-link').addEventListener('click', openInvitation);
+startMusic();
 
 function updateScroll() {
   header.classList.toggle('scrolled', scrollY > 45);

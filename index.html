@@ -17,24 +17,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Great+Vibes&family=Italiana&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="preload" as="image" href="./materials/wedding-couple.jpeg">
   <link rel="stylesheet" href="./invitation.css?v=20260913-3">
-  <noscript><style>.intro{display:none}body.no-scroll{overflow:auto}</style></noscript>
 </head>
-<body class="no-scroll">
+<body class="opened">
   <a class="skip-link" href="#main">Skip to invitation</a>
-  <div class="intro" id="intro" role="dialog" aria-modal="true" aria-labelledby="introTitle">
-    <div class="intro-temple" aria-hidden="true"></div>
-    <div class="intro-leaves" id="introLeaves" aria-hidden="true"></div>
-    <div class="intro-card">
-      <p class="intro-blessing">॥ Srirasthu · Subhamasthu · Avighnamasthu ॥</p>
-      <p class="intro-label">Together with our families</p>
-      <h1 id="introTitle">Tarun <span class="intro-amp">&</span>Madhurya</h1>
-      <p class="intro-date">Thursday · 26 November 2026</p>
-      <button class="enter-button" id="enterInvitation">Open invitation</button>
-      <span class="intro-hint">A celebration of love awaits</span>
-    </div>
-  </div>
   <div id="sceneLeaves" aria-hidden="true"></div>
-  <audio id="backgroundMusic" preload="metadata">
+  <audio id="backgroundMusic" preload="auto" autoplay playsinline>
     <source src="./materials/TarunMadhuryaWeddingSong.mp3" type="audio/mpeg">
   </audio>
   <div class="reading-progress" aria-hidden="true"></div>
@@ -148,6 +135,6 @@
     <button class="motion-button" id="motionButton" type="button" aria-label="Pause animations" aria-pressed="false">Ⅱ</button>
   </nav>
   <div class="toast" id="toast" role="status" aria-live="polite">Invitation link copied</div>
-  <script src="./invitation.js?v=20260913-1"></script>
+  <script src="./invitation.js?v=20260920-1"></script>
 </body>
 </html>
