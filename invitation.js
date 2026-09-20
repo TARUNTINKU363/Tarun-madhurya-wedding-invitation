@@ -2,11 +2,28 @@ const header = document.getElementById('siteHeader');
 const toast = document.getElementById('toast');
 const motionButton = document.getElementById('motionButton');
 const musicButton = document.getElementById('musicButton');
+const musicPrompt = document.getElementById('musicPrompt');
 const backgroundMusic = document.getElementById('backgroundMusic');
 const motionQuery = matchMedia('(prefers-reduced-motion: reduce)');
 const weddingDate = new Date('2026-11-26T20:32:00+05:30');
-let paused = motionQuery.matches;
+let paused = false;
 let toastTimer;
+
+const invitationUrl = new URL(window.location.href);
+invitationUrl.hash = '';
+if (window.location.hash) history.replaceState(null, '', invitationUrl.href);
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+
+function openInvitationAtStart() {
+  window.scrollTo(0, 0);
+}
+openInvitationAtStart();
+window.addEventListener('pageshow', () => {
+  requestAnimationFrame(() => {
+    openInvitationAtStart();
+    requestAnimationFrame(openInvitationAtStart);
+  });
+});
 
 // A fixed number of leaves keeps the animation lightweight on phones.
 function decorateLeaves(container, count) {
@@ -21,7 +38,6 @@ function decorateLeaves(container, count) {
     container.appendChild(leaf);
   }
 }
-decorateLeaves(document.getElementById('introLeaves'), 9);
 decorateLeaves(document.getElementById('sceneLeaves'), 12);
 
 function updateMotion() {
@@ -68,16 +84,19 @@ async function startMusic(showNotice = false) {
     musicHasStarted = true;
     musicPlaying = true;
     resumeMusicWhenVisible = false;
+    musicPrompt.hidden = true;
     updateMusicButton();
     if (showNotice) notifyGuest('Wedding song is playing');
   } catch (error) {
     musicPlaying = false;
+    musicPrompt.hidden = false;
     updateMusicButton();
     if (showNotice) notifyGuest('Tap the music note to play the song');
   }
 }
 
-function startMusicOnFirstInteraction() {
+function startMusicOnFirstInteraction(event) {
+  if (event.target.closest?.('#musicButton, #musicPrompt')) return;
   if (!musicPlaying) startMusic();
 }
 
@@ -95,7 +114,12 @@ function stopMusic(showNotice = false) {
 }
 
 musicButton.addEventListener('click', () => musicPlaying ? stopMusic(true) : startMusic(true));
-backgroundMusic.addEventListener('play', () => { musicPlaying = true; updateMusicButton(); });
+musicPrompt.addEventListener('click', () => startMusic(true));
+backgroundMusic.addEventListener('play', () => {
+  musicPlaying = true;
+  musicPrompt.hidden = true;
+  updateMusicButton();
+});
 backgroundMusic.addEventListener('pause', () => {
   if (!resumeMusicWhenVisible) musicPlaying = false;
   updateMusicButton();
@@ -114,6 +138,7 @@ backgroundMusic.addEventListener('ended', async () => {
 });
 backgroundMusic.addEventListener('error', () => {
   musicPlaying = false;
+  musicPrompt.hidden = true;
   musicButton.hidden = true;
 });
 document.addEventListener('visibilitychange', () => {
@@ -222,13 +247,13 @@ document.getElementById('shareButton').addEventListener('click', async () => {
   const title = 'Sai Tarun & Sai Durga Madhurya — Wedding Invitation';
   const text = 'You’re invited! 26 November 2026, T.T.D. Kalyanamandapam, MVP Colony, Visakhapatnam. Dinner 7:30 p.m. · Sumuhurtham 8:32 p.m. IST.';
   const shareable = /^https?:$/.test(location.protocol) && !['localhost', '127.0.0.1'].includes(location.hostname);
-  const data = shareable ? { title, text, url: location.href } : { title, text };
+  const data = shareable ? { title, text, url: invitationUrl.href } : { title, text };
   try {
     if (navigator.share) await navigator.share(data);
     else if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(shareable ? text + '\n' + location.href : text);
+      await navigator.clipboard.writeText(shareable ? text + '\n' + invitationUrl.href : text);
       notifyGuest(shareable ? 'Invitation details and link copied' : 'Wedding details copied');
-    } else window.prompt('Copy the invitation details:', shareable ? text + '\n' + location.href : text);
+    } else window.prompt('Copy the invitation details:', shareable ? text + '\n' + invitationUrl.href : text);
   } catch (error) {
     if (error.name !== 'AbortError') notifyGuest('Sharing was unavailable. Please try again.');
   }

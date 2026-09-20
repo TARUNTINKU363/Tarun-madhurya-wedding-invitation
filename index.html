@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Great+Vibes&family=Italiana&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="preload" as="image" href="./materials/wedding-couple.jpeg">
-  <link rel="stylesheet" href="./invitation.css?v=20260913-3">
+  <link rel="stylesheet" href="./invitation.css?v=20260920-1">
 </head>
 <body class="opened">
   <a class="skip-link" href="#main">Skip to invitation</a>
@@ -24,6 +24,7 @@
   <audio id="backgroundMusic" preload="auto" autoplay playsinline>
     <source src="./materials/TarunMadhuryaWeddingSong.mp3" type="audio/mpeg">
   </audio>
+  <button class="music-prompt" id="musicPrompt" type="button" hidden><span aria-hidden="true">♫</span> Tap to play wedding song</button>
   <div class="reading-progress" aria-hidden="true"></div>
   <header class="site-header" id="siteHeader">
     <a class="monogram" href="#home" aria-label="Tarun and Madhurya, home">T <span aria-hidden="true">&</span> M</a>
@@ -135,6 +136,6 @@
     <button class="motion-button" id="motionButton" type="button" aria-label="Pause animations" aria-pressed="false">Ⅱ</button>
   </nav>
   <div class="toast" id="toast" role="status" aria-live="polite">Invitation link copied</div>
-  <script src="./invitation.js?v=20260920-1"></script>
+  <script src="./invitation.js?v=20260920-4"></script>
 </body>
 </html>
