@@ -131,9 +131,6 @@ footer strong{display:block;font:400 33px "Great Vibes",cursive;margin-bottom:10
 .guest-dock .dock-calendar{background:var(--maroon);color:white;padding:0 12px}
 .guest-dock .music-button,.guest-dock .motion-button{font-size:17px;min-width:42px;transition:color .25s,background .25s,transform .25s}
 .guest-dock .music-button.is-playing{color:var(--gold);background:#9d773e18;animation:musicPulse 2.4s ease-in-out infinite}
-.music-prompt{position:fixed;left:50%;bottom:max(92px,calc(env(safe-area-inset-bottom) + 82px));z-index:96;display:inline-flex;align-items:center;gap:9px;min-height:46px;padding:0 20px;border:1px solid #d8c7a6;border-radius:99px;background:#fffaf2f2;color:var(--maroon);box-shadow:0 8px 35px #332c2538;backdrop-filter:blur(16px);transform:translateX(-50%);white-space:nowrap;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
-.music-prompt span{font-size:18px;color:var(--gold)}
-.music-prompt[hidden]{display:none}
 .toast{position:fixed;z-index:1000;bottom:100px;left:50%;transform:translate(-50%,30px);opacity:0;pointer-events:none;background:var(--deep-maroon);color:white;border-radius:16px;padding:15px 20px;width:max-content;max-width:90%;font-size:12px;text-align:center;transition:opacity .3s,transform .3s}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 .reveal{opacity:1}
@@ -205,6 +202,8 @@ footer strong{display:block;font:400 33px "Great Vibes",cursive;margin-bottom:10
 }
 @media(prefers-reduced-motion:reduce){
 html{scroll-behavior:auto}
+*,*::before,*::after{animation:none!important;transition:none!important}
+.drifting-leaf{display:none}
 .js-motion .reveal{opacity:1;transform:none}
 }
 @media print{

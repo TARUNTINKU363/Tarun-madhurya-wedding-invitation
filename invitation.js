@@ -1,29 +1,17 @@
+const intro = document.getElementById('intro');
+const enterButton = document.getElementById('enterInvitation');
+const main = document.getElementById('main');
 const header = document.getElementById('siteHeader');
+const dock = document.querySelector('.guest-dock');
 const toast = document.getElementById('toast');
 const motionButton = document.getElementById('motionButton');
 const musicButton = document.getElementById('musicButton');
-const musicPrompt = document.getElementById('musicPrompt');
 const backgroundMusic = document.getElementById('backgroundMusic');
 const motionQuery = matchMedia('(prefers-reduced-motion: reduce)');
 const weddingDate = new Date('2026-11-26T20:32:00+05:30');
-let paused = false;
+let opened = false;
+let paused = motionQuery.matches;
 let toastTimer;
-
-const invitationUrl = new URL(window.location.href);
-invitationUrl.hash = '';
-if (window.location.hash) history.replaceState(null, '', invitationUrl.href);
-if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-
-function openInvitationAtStart() {
-  window.scrollTo(0, 0);
-}
-openInvitationAtStart();
-window.addEventListener('pageshow', () => {
-  requestAnimationFrame(() => {
-    openInvitationAtStart();
-    requestAnimationFrame(openInvitationAtStart);
-  });
-});
 
 // A fixed number of leaves keeps the animation lightweight on phones.
 function decorateLeaves(container, count) {
@@ -38,6 +26,7 @@ function decorateLeaves(container, count) {
     container.appendChild(leaf);
   }
 }
+decorateLeaves(document.getElementById('introLeaves'), 9);
 decorateLeaves(document.getElementById('sceneLeaves'), 12);
 
 function updateMotion() {
@@ -53,7 +42,7 @@ else motionQuery.addListener(syncMotionPreference);
 document.addEventListener('visibilitychange', updateMotion);
 updateMotion();
 
-// Try immediately, then use the guest's first interaction when audible autoplay is blocked.
+// The supplied song starts inside the opening tap to satisfy mobile autoplay rules.
 const musicStartAt = 6;
 let musicPlaying = false;
 let resumeMusicWhenVisible = false;
@@ -84,25 +73,14 @@ async function startMusic(showNotice = false) {
     musicHasStarted = true;
     musicPlaying = true;
     resumeMusicWhenVisible = false;
-    musicPrompt.hidden = true;
     updateMusicButton();
     if (showNotice) notifyGuest('Wedding song is playing');
   } catch (error) {
     musicPlaying = false;
-    musicPrompt.hidden = false;
     updateMusicButton();
     if (showNotice) notifyGuest('Tap the music note to play the song');
   }
 }
-
-function startMusicOnFirstInteraction(event) {
-  if (event.target.closest?.('#musicButton, #musicPrompt')) return;
-  if (!musicPlaying) startMusic();
-}
-
-['pointerdown', 'pointerup', 'touchstart', 'touchend', 'click', 'keydown', 'wheel'].forEach(eventName => {
-  document.addEventListener(eventName, startMusicOnFirstInteraction, { once: true, passive: true });
-});
 
 function stopMusic(showNotice = false) {
   if (!musicPlaying) return;
@@ -114,12 +92,7 @@ function stopMusic(showNotice = false) {
 }
 
 musicButton.addEventListener('click', () => musicPlaying ? stopMusic(true) : startMusic(true));
-musicPrompt.addEventListener('click', () => startMusic(true));
-backgroundMusic.addEventListener('play', () => {
-  musicPlaying = true;
-  musicPrompt.hidden = true;
-  updateMusicButton();
-});
+backgroundMusic.addEventListener('play', () => { musicPlaying = true; updateMusicButton(); });
 backgroundMusic.addEventListener('pause', () => {
   if (!resumeMusicWhenVisible) musicPlaying = false;
   updateMusicButton();
@@ -138,7 +111,6 @@ backgroundMusic.addEventListener('ended', async () => {
 });
 backgroundMusic.addEventListener('error', () => {
   musicPlaying = false;
-  musicPrompt.hidden = true;
   musicButton.hidden = true;
 });
 document.addEventListener('visibilitychange', () => {
@@ -152,7 +124,28 @@ document.addEventListener('visibilitychange', () => {
 });
 updateMusicButton();
 
-startMusic();
+// Keep keyboard and screen-reader navigation inside the cover until it opens.
+[main, header, dock, document.querySelector('footer')].forEach(element => element.inert = true);
+enterButton.focus({ preventScroll: true });
+intro.addEventListener('keydown', event => {
+  if (event.key === 'Tab') { event.preventDefault(); enterButton.focus(); }
+  if (event.key === 'Escape') openInvitation();
+});
+function openInvitation() {
+  if (opened) return;
+  opened = true;
+  window.scrollTo({ top: 0, behavior: 'auto' });
+  [main, header, dock, document.querySelector('footer')].forEach(element => element.inert = false);
+  document.body.classList.add('opened');
+  document.body.classList.remove('no-scroll');
+  startMusic();
+  intro.classList.add('hidden');
+  intro.inert = true;
+  document.getElementById('heroTitle').focus({ preventScroll: true });
+  setTimeout(() => intro.remove(), motionQuery.matches ? 0 : 1050);
+}
+enterButton.addEventListener('click', openInvitation);
+document.querySelector('.skip-link').addEventListener('click', openInvitation);
 
 function updateScroll() {
   header.classList.toggle('scrolled', scrollY > 45);
@@ -247,13 +240,13 @@ document.getElementById('shareButton').addEventListener('click', async () => {
   const title = 'Sai Tarun & Sai Durga Madhurya — Wedding Invitation';
   const text = 'You’re invited! 26 November 2026, T.T.D. Kalyanamandapam, MVP Colony, Visakhapatnam. Dinner 7:30 p.m. · Sumuhurtham 8:32 p.m. IST.';
   const shareable = /^https?:$/.test(location.protocol) && !['localhost', '127.0.0.1'].includes(location.hostname);
-  const data = shareable ? { title, text, url: invitationUrl.href } : { title, text };
+  const data = shareable ? { title, text, url: location.href } : { title, text };
   try {
     if (navigator.share) await navigator.share(data);
     else if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(shareable ? text + '\n' + invitationUrl.href : text);
+      await navigator.clipboard.writeText(shareable ? text + '\n' + location.href : text);
       notifyGuest(shareable ? 'Invitation details and link copied' : 'Wedding details copied');
-    } else window.prompt('Copy the invitation details:', shareable ? text + '\n' + invitationUrl.href : text);
+    } else window.prompt('Copy the invitation details:', shareable ? text + '\n' + location.href : text);
   } catch (error) {
     if (error.name !== 'AbortError') notifyGuest('Sharing was unavailable. Please try again.');
   }
